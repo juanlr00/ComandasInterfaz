@@ -1,3 +1,4 @@
+com\mycompany\comandasinterfaz\Conexion.class
 module-info.class
 com\mycompany\comandasinterfaz\PrimaryController.class
 com\mycompany\comandasinterfaz\HibernateUtil.class

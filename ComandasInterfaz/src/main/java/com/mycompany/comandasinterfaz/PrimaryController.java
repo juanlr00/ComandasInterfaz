@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -18,6 +19,16 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import models.Pedido;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
+import net.sf.jasperreports.swing.JRViewer;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -121,6 +132,33 @@ public class PrimaryController implements Initializable {
     private void verCarta(ActionEvent event) {
         String archivo = "Carta.jrxml";
         
+        try {
+            var parameters = new HashMap();
+            parameters.put("Titulo", "Cafeteria el arbolillo");
+            
+            JasperReport informe = JasperCompileManager.compileReport(archivo);
+            JasperPrint impresion = JasperFillManager.fillReport(informe, parameters, Conexion. getConexion());
+            
+            JRViewer visor = new JRViewer(impresion);
+            
+            javax.swing.JFrame ventanaInforme = new javax.swing.JFrame("Cafeteria el arbolillo");
+            ventanaInforme.getContentPane().add(visor);
+            ventanaInforme.pack();
+            ventanaInforme.setVisible(true);
+            
+            JRPdfExporter exportador = new JRPdfExporter();
+            exportador.setExporterInput( new SimpleExporterInput(impresion) );
+            exportador.setExporterOutput( new SimpleOutputStreamExporterOutput("Cafeteria el arbolillo.pdf") );
+            
+            var configuracion = new SimplePdfExporterConfiguration();
+            exportador.setConfiguration(configuracion);
+            
+            exportador.exportReport();
+            
+                    
+        } catch (JRException ex) {
+            System.out.println(ex);
+        }
     }
 
     @FXML
