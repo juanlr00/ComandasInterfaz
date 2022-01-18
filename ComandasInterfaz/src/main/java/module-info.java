@@ -6,8 +6,10 @@ module com.mycompany.comandasinterfaz {
     requires java.naming;
     requires java.sql;
     requires java.persistence;
+    requires jasperreports;
     
-    opens com.mycompany.comandasinterfaz to javafx.fxml, org.hibernate.orm.core, java.sql;
+    
+    opens com.mycompany.comandasinterfaz to javafx.fxml,javafx.swing, org.hibernate.orm.core, java.sql;
     opens models;
     exports com.mycompany.comandasinterfaz;
     

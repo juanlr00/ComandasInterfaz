@@ -2,12 +2,16 @@ package com.mycompany.comandasinterfaz;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -25,15 +29,11 @@ public class PrimaryController implements Initializable {
     @FXML
     private TableView<Pedido> tvTabla;
     @FXML
-    private TableColumn<Pedido, String> CCiclo;
+    private TableColumn<Pedido, String> CNombre;
     @FXML
-    private TableColumn<Pedido, String> CAlumno;
+    private TableColumn<Pedido, String> CDescripcion;
     @FXML
-    private TableColumn<Pedido, String> CTipo;
-    @FXML
-    private TableColumn<Pedido, String> CProducto;
-    @FXML
-    private TableColumn<Pedido, Integer> CPrecio;
+    private TableColumn<Pedido, String> CPrecio;
     @FXML
     private TableColumn<Pedido, String> CEstado;
     @FXML
@@ -41,54 +41,90 @@ public class PrimaryController implements Initializable {
     /**
      * Initializes the controller class.
      */
-    
+
     private static SessionFactory sf = new Configuration().configure().buildSessionFactory();
     private static Session s = sf.openSession();
-     
+    @FXML
+    private Button btnCarta;
+    @FXML
+    private Button btnPedido;
+    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        ObservableList<Pedido> contenido = FXCollections.observableArrayList(); 
+        ObservableList<Pedido> contenido = FXCollections.observableArrayList();
+
+        CNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         
-        tvTabla.setItems(contenido); 
+        CDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+//            (var row) -> {
+//                return new SimpleStringProperty(""+ row.getValue().getCarta().getDescripcion());
+//            }
+//        );
         
-        CCiclo.setCellValueFactory(new PropertyValueFactory<>("ciclo"));
-         CAlumno.setCellValueFactory(new PropertyValueFactory<>("alumno"));
-          CTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-           CProducto.setCellValueFactory(new PropertyValueFactory<>("producto"));
-            CPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
-              CEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
-              
+        CPrecio.setCellValueFactory(
+            (var row) -> {
+                return new SimpleStringProperty(""+ row.getValue().getCarta().getPrecio());
+            }
+        );
+        
+        CEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+        
+
+ 
+        
+        java.util.Date actual = new java.util.Date();
+        java.sql.Date fechaActual = new java.sql.Date(actual.getTime());
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Query q = s.createQuery("FROM Pedido ", Pedido.class); //AND p.fecha_pedido = :fecha"
+        //q.setParameter("fecha", fechaActual);
+        ArrayList<Pedido> resultado = (ArrayList<Pedido>) q.list();
+
         contenido.addAll(listarPedido());
-    }    
     
-     public void count(){
-         pendientes.setText("Pedidos pendientes: " + String.valueOf(ComandasPendientes().size()));
-        }
-        public static ArrayList<Pedido> listarPedido(){
-        
-        Query q = s.createQuery("FROM Pedido", Pedido.class);     
-        ArrayList<Pedido> qres = (ArrayList<Pedido>) q.getResultList();
-       
-        return qres;
-       
+        tvTabla.setItems(contenido);
+
     }
-        
-        public static ArrayList<Pedido> ComandasPendientes(){
-        
+
+    public void count() {
+        pendientes.setText("Pedidos pendientes: " + String.valueOf(ComandasPendientes().size()));
+    }
+
+    public static ArrayList<Pedido> listarPedido() {
+
+        Query q = s.createQuery("FROM Pedido", Pedido.class);
+        ArrayList<Pedido> qres = (ArrayList<Pedido>) q.getResultList();
+
+        return qres;
+
+    }
+
+    public static ArrayList<Pedido> ComandasPendientes() {
+
         Query q = s.createQuery("FROM Pedido WHERE estado = 'pendiente'", Pedido.class);
         ArrayList<Pedido> qres = (ArrayList<Pedido>) q.getResultList();
-       
+
         return qres;
     }
-        
-    @FXML
+
     private void click(MouseEvent event) {
 
-       Pedido p = tvTabla.getSelectionModel().getSelectedItem();
-         Transaction t = s.beginTransaction();
-            p.setEstado("Recogido");
-            s.update(p);
-            t.commit();
-            listarPedido();
+        Pedido p = tvTabla.getSelectionModel().getSelectedItem();
+        Transaction t = s.beginTransaction();
+        p.setEstado("Recogido");
+        s.update(p);
+        t.commit();
+        listarPedido();
+    }
+
+    @FXML
+    private void verCarta(ActionEvent event) {
+        String archivo = "Carta.jrxml";
+        
+    }
+
+    @FXML
+    private void verPedido(ActionEvent event) {
+        String archivo = "Pedido.jrxml";
     }
 }

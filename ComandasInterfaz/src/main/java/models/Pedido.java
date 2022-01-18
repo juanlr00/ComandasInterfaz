@@ -7,7 +7,9 @@ package models;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import static javax.persistence.FetchType.EAGER;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
@@ -25,13 +27,15 @@ public class Pedido implements Serializable {
     
     @Id
     @GeneratedValue( strategy=IDENTITY)
-    
     private Long id;
+    
     private String nombre;
+    
+    @Column(name="estado")
     private String estado;
     private Date fecha;
     
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn( name = "carta_id")    
     private Carta carta;
 
@@ -39,7 +43,8 @@ public class Pedido implements Serializable {
     public Pedido() {
     }
 
-    public Pedido(String nombre, String estado, Date fecha) {
+    public Pedido(Long id, String nombre, String estado, Date fecha) {
+        this.id = id;
         this.nombre = nombre;
         this.estado = estado;
         this.fecha = fecha;
@@ -76,6 +81,16 @@ public class Pedido implements Serializable {
     public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
+
+    public Carta getCarta() {
+        return carta;
+    }
+
+    public void setCarta(Carta carta) {
+        this.carta = carta;
+    }
+    
+    
 
     @Override
     public String toString() {

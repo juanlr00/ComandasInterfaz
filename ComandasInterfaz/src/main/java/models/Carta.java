@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
@@ -25,25 +26,27 @@ public class Carta implements Serializable {
     
     @Id
     @GeneratedValue ( strategy=IDENTITY)
+    private Long id;
     
-    
-    @OneToMany( mappedBy = "carta", cascade = CascadeType.ALL)
+    @OneToMany( mappedBy = "carta", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
     //Importante iniciarla
     private Set<Pedido> pedidos = new HashSet(0);
     
-    private Long id;
-    private String estado;
+
+    private String nombre;
     private String descripcion;
     private int precio;
 
     public Carta() {
     }
 
-    public Carta(String estado, int precio) {
-        this.estado = estado;
+    public Carta(String nombre, int precio) {
+        this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;
     }
+    
+    
 
     public Long getId() {
         return id;
@@ -54,11 +57,11 @@ public class Carta implements Serializable {
     }
 
     public String getEstado() {
-        return estado;
+        return nombre;
     }
 
     public void setEstado(String estado) {
-        this.estado = estado;
+        this.nombre = estado;
     }
 
     public String getDescripcion() {
@@ -77,9 +80,19 @@ public class Carta implements Serializable {
         this.precio = precio;
     }
 
+    public Set<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(Set<Pedido> pedidos) {
+        this.pedidos = pedidos;
+    }
+    
+    
+
     @Override
     public String toString() {
-        return "Carta{" + "pedidos=" + pedidos + ", id=" + id + ", estado=" + estado + ", descripcion=" + descripcion + ", precio=" + precio + '}';
+        return "Carta{" + "pedidos=" + pedidos + ", id=" + id + ", estado=" + nombre + ", descripcion=" + descripcion + ", precio=" + precio + '}';
     }
 
    
