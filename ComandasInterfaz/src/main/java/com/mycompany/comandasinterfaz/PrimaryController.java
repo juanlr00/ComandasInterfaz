@@ -67,11 +67,13 @@ public class PrimaryController implements Initializable {
 
         CNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         
-        CDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-//            (var row) -> {
-//                return new SimpleStringProperty(""+ row.getValue().getCarta().getDescripcion());
-//            }
-//        );
+        CDescripcion.setCellValueFactory(
+            (var row) -> {
+                
+                String exit = " "+ row.getValue().getCarta().getDescripcion(); 
+                return new SimpleStringProperty(exit);
+            }
+        );
         
         CPrecio.setCellValueFactory(
             (var row) -> {
@@ -148,7 +150,7 @@ public class PrimaryController implements Initializable {
             
             JRPdfExporter exportador = new JRPdfExporter();
             exportador.setExporterInput( new SimpleExporterInput(impresion) );
-            exportador.setExporterOutput( new SimpleOutputStreamExporterOutput("Cafeteria el arbolillo.pdf") );
+            exportador.setExporterOutput( new SimpleOutputStreamExporterOutput("Cafeteria_el_arbolillo.pdf") );
             
             var configuracion = new SimplePdfExporterConfiguration();
             exportador.setConfiguration(configuracion);
@@ -164,5 +166,34 @@ public class PrimaryController implements Initializable {
     @FXML
     private void verPedido(ActionEvent event) {
         String archivo = "Pedido.jrxml";
+        
+        try {
+            var parameters = new HashMap();
+            parameters.put("Titulo", "Comandas");
+            
+            JasperReport informe = JasperCompileManager.compileReport(archivo);
+            JasperPrint impresion = JasperFillManager.fillReport(informe, parameters, Conexion. getConexion());
+            
+            JRViewer visor = new JRViewer(impresion);
+            
+            javax.swing.JFrame ventanaInforme = new javax.swing.JFrame("Comandas");
+            ventanaInforme.getContentPane().add(visor);
+            ventanaInforme.pack();
+            ventanaInforme.setVisible(true);
+            
+            JRPdfExporter exportador = new JRPdfExporter();
+            exportador.setExporterInput( new SimpleExporterInput(impresion) );
+            exportador.setExporterOutput( new SimpleOutputStreamExporterOutput("Comandas.pdf") );
+            
+            var configuracion = new SimplePdfExporterConfiguration();
+            exportador.setConfiguration(configuracion);
+            
+            exportador.exportReport();
+            
+                    
+        } catch (JRException ex) {
+            System.out.println(ex);
+        }
     }
+    
 }

@@ -19,9 +19,9 @@ public class Conexion {
     private static Connection conexion;
     
     static{
-        String url="jdbc:mysql://localhost:3306/interfaz_comandas?zeroDateTimeBehavior=CONVERT_TO_NULL";
-        String user="openpg";
-        String pass="openpgpwd";
+        String url="jdbc:mysql://localhost:3306/comandas?zeroDateTimeBehavior=CONVERT_TO_NULL";
+        String user="root";
+        String pass="";
         
         try {
             conexion = DriverManager.getConnection(url, user, pass);
